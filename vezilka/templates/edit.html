@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+<xi:include href="master.html"/>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Editing „${c.pagename}“</title>
+</head>
+<body>
+<h1>Editing „${c.pagename}“</h1>
+<div id="content">
+  <form action="${c.url}" method="post">
+    <textarea name="content" py:content="c.content" rows="16" cols="70"></textarea><br/>
+    <select title="Select content-type" name="content_type">
+      <py:for each="option in c.supported_content_types">
+        <option py:if="option!=c.content_type" value="${option}">${option}</option>
+        <option py:if="option==c.content_type" value="${option}" selected="selected">${option}</option>
+      </py:for>
+    </select>
+    <input title="Comma separated tags" type="text" name="tags" value="${c.tags}"/>
+    <input type="submit" name="submit" value="Save"/>
+    <a href="${c.url}">Cancel</a>
+  </form>
+</div>
+</body>
+</html>

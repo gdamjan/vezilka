@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:py="http://genshi.edgewall.org/" py:strip="">
+
+<head py:match="head" py:attrs="select('@*')" once="true">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" py:strip="" />
+    <title py:with="title = list(select('title/text()'))">
+      Везилка<py:if test="title">: ${title}</py:if>
+    </title>
+    <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" /> 
+    ${select('*[local-name()!="title"]')}
+</head>
+
+<body py:match="body" py:attrs="select('@*')" once="true">
+<div id="main_content">
+  <div py:if="c.message" id="notice" py:content="c.message"/>
+  <div py:replace="select('*|text()')"/>
+</div>
+
+<div id="footer">
+  <p>Vezilka-wo: WebOb, Genshi, Paste, CouchDB</p>
+  <p>Copyleft 2008 etc...</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+<xi:include href="master.html"/>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>${c.pagename}</title>
+</head>
+<body>
+<div py:replace="HTML(c.content)">
+
+Page text goes here.
+
+</div>
+<div id="ui">
+    [<a href="${c.url}">Permalink</a>] |
+    <a href="${c.url};edit">Edit this page</a> |
+    <a href="${c.url};delete">Delete</a>
+    <br/>
+    Created on: ${c.created} | Content-type: ${c.content_type} <br/>
+    <ul class='tag-list'>Tags:
+      <li py:for="tag in c.tags">
+      <a href="">${tag}</a>
+      </li>
+    </ul>
+
+</div>
+</body>
+</html>

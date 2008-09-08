@@ -1,0 +1,33 @@
+[
+{
+  "_id":"_design/pages",
+  "language": "javascript",
+  "views": 
+  { 
+    "all": { "map": "function(doc) { if (doc.doc_type == 'page')  emit(doc._id, null) }"},
+    "by_date": { "map": "function(doc) { if (doc.doc_type == 'page')  emit(doc.creation_time, null) }"},
+    "by_slug": { "map": "function(doc) { if (doc.doc_type == 'page')  emit(doc.slug, null) }"},
+    "by_type": { "map": "function(doc) { if (doc.doc_type == 'page')  emit(doc.content_type, null) }" }
+  }
+},
+
+{
+  "_id":"_design/comments",
+  "language": "javascript",
+  "views": 
+  { 
+    "all": { "map": "function(doc) { if (doc.doc_type == 'comment')  emit(null, null) }" },
+    "by_date": { "map": "function(doc) { if (doc.doc_type == 'comment')  emit(doc.creation_time, null) }" },
+    "by_parent": { "map": "function(doc) { if (doc.doc_type == 'comment')  emit(doc.parent, null) }" }
+  }
+},
+
+{
+  "_id":"_design/tags",
+  "language": "javascript",
+  "views":
+  {
+    "all": { "map": "function(doc) { for(var i=0; i<doc.tags.length; i++) { emit(doc.tags[i], null) } }" }
+  }
+}
+]
