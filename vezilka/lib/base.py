@@ -18,6 +18,8 @@ class BaseWSGIDispatcher(object):
         self.__config = config
 
     def prepare(self, environ):
+        """Prepare the object for the request. Initialize a Request and Response 
+        objects bound to the instance of the class"""
         req = Request(environ, charset=self.DEFAULT_CHARSET)
         resp = Response(charset=self.DEFAULT_CHARSET)
         self.__request = req
@@ -45,7 +47,7 @@ class BaseWSGIDispatcher(object):
 
     def render_result(self, result):
         # should be an unicode string
-        # if None, assume "method" set self.response.body (or app_iter) itself
+        # if None, assume the method called has set self.response.body (or app_iter) itself
         if result is None:
             return self.response
         if isinstance(result, unicode):

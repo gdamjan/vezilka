@@ -11,8 +11,8 @@ def get_engine(name, default=None):
 def register_engine(name, engine):
     __engines__[name] = engine
 
-# maybe an engine should be a class that supports two methods
-# process and documentation?
+# maybe an engine should be a class that supports two methods:
+#  "process" and "documentation"?
 def docutils_engine(content):
     from docutils.core import publish_parts
     meta = {}

@@ -5,10 +5,7 @@ server = couchdb.Server('http://localhost:5984/') # from config
 db = server['vezilka'] # from config
 
 def get_doc(id):
-    try:
-        return db[id]
-    except couchdb.client.ResourceNotFound:
-        return None
+    return db.get(id)
 
 def create_page(doc):
     db.create(doc)
@@ -17,13 +14,11 @@ def update_page(doc):
     db[doc.id] = doc
         
 def get_page(slug):
-    rows = db.view('pages/by_slug')[slug].rows
-    try:
+    rows = db.view('pages/by_slug', key = slug).rows
+    if len(rows) > 0:
         id = rows[0].id
-        return db[id]
-    except StopIteration:
-        return None
-    except couchdb.client.ResourceNotFound:
+        return get_doc(id)
+    else:
         return None
 
 def get_all_pages():

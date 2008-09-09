@@ -1,4 +1,5 @@
 from __future__ import absolute_import, division
+from beaker.middleware import SessionMiddleware
 from .controller import Vezilka
 
 class WSGI_app(object):
@@ -14,5 +15,7 @@ class WSGI_app(object):
 # PasteDeploy [paste.app_factory]
 def app_factory(global_config, **local_conf):
     global_config.update(local_conf)
-    return WSGI_app(global_config)
+    app = WSGI_app(global_config)
+    app = SessionMiddleware(app, global_config)
+    return app
 

@@ -11,7 +11,7 @@ from .model import get_page, get_parsed_content, markup, create_page, update_pag
 class Vezilka(BaseWSGIDispatcher):
     def get_default(self, pagename):
         if not pagename:
-            pagename = u'First_post'
+            pagename = u'First_post' # default page, like index.html
         doc = get_page(pagename)
         if doc is None:
             raise exc.HTTPNotFound()
@@ -59,7 +59,7 @@ class Vezilka(BaseWSGIDispatcher):
             doc['creation_time'] = time.time()
             create_page(doc)
         doc = get_page(pagename)
-        doc['tags'] = [x.strip() for x in req.params['tags'].split(',')]
+        doc['tags'] = [ x.strip() for x in req.params['tags'].split(',') ]
         doc['content'] = req.params['content']
         doc['content_type'] = req.params['content_type']
         update_page(doc)
@@ -75,6 +75,7 @@ class Vezilka(BaseWSGIDispatcher):
         return render('delete.html', c=c)
 
     def post_delete(self, pagename):
+        # do the delete? ...
         url = self.request.relative_url(pagename, True)
         raise exc.HTTPSeeOther(location=url.encode('utf-8')) # FIXME
 
@@ -82,3 +83,36 @@ class Vezilka(BaseWSGIDispatcher):
         self.response.content_type = 'application/atom+xml'
         return u'<xml>'
 
+    def get_login(self, pagename, username=None, status=None):
+        c = Context()
+        c.pagename = pagename
+        c.username = username
+        c.status = status
+        c.url = self.request.relative_url(pagename, True)
+        if self.is_logged():
+            c.status = 'Already logged in!'
+        return render('login.html', c=c)
+
+    def post_login(self, pagename):
+        req = self.request
+        username = req.params['username']
+        password = req.params['password']
+        if (username, password) == ('admin', 'password'):
+            session = self.request.environ['beaker.session']
+            session['admin'] = 1
+            session.save()
+            url = self.request.relative_url(pagename, True)
+            raise exc.HTTPSeeOther(location=url.encode('utf-8'))
+        else:
+            return self.get_login(pagename, username, 'Wrong username or password')
+
+    def get_logout(self, pagename):
+        session = self.request.environ['beaker.session']
+        session['admin'] = 0
+        session.save()
+        url = self.request.relative_url(pagename, True)
+        raise exc.HTTPSeeOther(location=url.encode('utf-8'))
+
+    def is_logged(self):
+        session = self.request.environ['beaker.session']
+        return session.get('admin') == 1

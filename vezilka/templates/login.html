@@ -66,14 +66,14 @@
 <body>
   <div id="loginBox">
     <h1>Login</h1>
-    <form action="${h.url_for(controller='admin', action='login')}" method="POST">
+    <form action="${c.url};login" method="post">
     <table>
       <tr>
         <td class="label">
-          <label for="user_name">User Name:</label>
+          <label for="username">User Name:</label>
         </td>
         <td class="field">
-          <input type="text" id="user_name" name="user_name"/>
+          <input type="text" id="username" name="username" value="${c.username}"/>
         </td>
       </tr>
       <tr>
@@ -86,18 +86,13 @@
       </tr>
       <tr>
         <td colspan="2" class="buttons">
-          <input type="submit" name="login" value="Login"/>
+                <a href="${c.url}">Cancel</a>
+                <input type="submit" name="login" value="Login"/> 
         </td>
       </tr>
     </table>
-
-      <input py:if="c.forward_url" type="hidden" name="forward_url"
-                value="${c.forward_url}"/>
-      <py:if test="c.original_parameters">
-      <input  py:for="name, value in c.original_params.items()"
-                type="hidden" name="${name}" value="${value}"/>
-       </py:if>
     </form>
+    ${c.status}
   </div>
 </body>
 </html>
