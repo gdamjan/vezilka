@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# Requires Paste
 from paste.urlmap import URLMap
 from weberror.evalexception import EvalException
 from webob import exc
