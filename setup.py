@@ -1,9 +1,6 @@
-from setuptools import setup
-setup(...
-    entry_points="""
-    [paste.paster_command]
-    mycommand = mypackage.mycommand:MyCommand
-
-    [paste.global_paster_command]
-    myglobal = mypackage.myglobal:MyGlobalCommand
-    """)
+from setuptools import setup, find_packages
+setup(
+     name = "Vezilka",
+     version = "0.1",
+     packages = find_packages(),
+)
