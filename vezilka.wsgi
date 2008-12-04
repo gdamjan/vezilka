@@ -1,5 +1,5 @@
 
-from vezilka import app
+import vezilka
 config = {
     'couchdb.url': 'http://localhost:5984/vezilka',
     'beaker.session.type': 'cookie',
@@ -7,4 +7,4 @@ config = {
     'beaker.session.validate_key': 'somesecret',
 }
 
-application = app.app_factory(config)
+application = vezilka.app_factory(config)
