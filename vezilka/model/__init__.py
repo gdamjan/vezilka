@@ -14,7 +14,7 @@ def update_page(doc):
     db[doc.id] = doc
         
 def get_page(slug):
-    rows = db.view('pages/by_slug', key = slug).rows
+    rows = db.view('_design/pages/_view/by_slug', key = slug).rows
     if len(rows) > 0:
         id = rows[0].id
         return get_doc(id)

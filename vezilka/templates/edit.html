@@ -11,7 +11,7 @@
 <body>
 <h1>Editing „${c.pagename}“</h1>
 <div id="content">
-  <form action="${c.url}" method="post">
+  <form action="${c.post_url}" method="post">
     <textarea name="content" py:content="c.content" rows="16" cols="70"></textarea><br/>
     <select title="Select content-type" name="content_type">
       <py:for each="option in c.supported_content_types">
