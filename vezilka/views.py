@@ -54,8 +54,8 @@ class Edit(object):
         doc = get_page(pagename)
         if doc is None:
             doc = {}
+            doc['Type'] = 'page'
             doc['slug'] = pagename
-            doc['doc_type'] = 'page'
             doc['creation_time'] = time.time()
             create_page(doc)
         doc = get_page(pagename)

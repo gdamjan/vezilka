@@ -4,10 +4,10 @@
   "language": "javascript",
   "views": 
   { 
-    "all": { "map": "function(doc) { if (doc.doc_type == 'page')  emit(doc._id, null) }"},
-    "by_date": { "map": "function(doc) { if (doc.doc_type == 'page')  emit(doc.creation_time, null) }"},
-    "by_slug": { "map": "function(doc) { if (doc.doc_type == 'page')  emit(doc.slug, null) }"},
-    "by_type": { "map": "function(doc) { if (doc.doc_type == 'page')  emit(doc.content_type, null) }" }
+    "all": { "map": "function(doc) { if (doc.Type == 'page')  emit(doc._id, null) }"},
+    "by_date": { "map": "function(doc) { if (doc.Type == 'page')  emit(doc.creation_time, null) }"},
+    "by_slug": { "map": "function(doc) { if (doc.Type == 'page')  emit(doc.slug, null) }"},
+    "by_type": { "map": "function(doc) { if (doc.Type == 'page')  emit(doc.content_type, null) }" }
   }
 },
 
@@ -16,9 +16,9 @@
   "language": "javascript",
   "views": 
   { 
-    "all": { "map": "function(doc) { if (doc.doc_type == 'comment')  emit(null, null) }" },
-    "by_date": { "map": "function(doc) { if (doc.doc_type == 'comment')  emit(doc.creation_time, null) }" },
-    "by_parent": { "map": "function(doc) { if (doc.doc_type == 'comment')  emit(doc.parent, null) }" }
+    "all": { "map": "function(doc) { if (doc.Type == 'comment')  emit(null, null) }" },
+    "by_date": { "map": "function(doc) { if (doc.Type == 'comment')  emit(doc.creation_time, null) }" },
+    "by_parent": { "map": "function(doc) { if (doc.Type == 'comment')  emit(doc.parent, null) }" }
   }
 },
 

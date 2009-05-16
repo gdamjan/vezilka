@@ -1,7 +1,7 @@
 [
 {
+  "Type": "page",
   "slug": "First_post",
-  "doc_type": "page",
   "content": "бла бла бла",
   "content_type": "inline-text/x-rst",
   "creation_time": 1198985014.056640753,
@@ -9,7 +9,7 @@
 },
 
 { 
-  "doc_type": "comment",
+  "Type": "comment",
   "content": "јада јада јада",
   "content_type": "inline-text/x-rst",
   "creation_time": 1198985111.05,
@@ -17,8 +17,8 @@
 },
 
 {
+  "Type": "page",
   "slug": "Second_post",
-  "doc_type": "page",
   "content": "јууухуууу\nјееее\n* еден\n* два\n",
   "content_type": "inline-text/x-rst",
   "creation_time": 1198985014.056640753,
