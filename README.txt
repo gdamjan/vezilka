@@ -3,8 +3,8 @@
 =======
 
 Ова е имплементација на Везилка, wiki/blog системот, без Pylons.
-WSGI апликацијата зависи само од Python-2.5, WebOb, Beaker и Genshi
-(сега за сега), и евентуално во иднина од formencode, simplejson и Paste.
+WSGI апликацијата зависи само од Python-2.5, Werkzeug, CouchDB и Genshi
+(сега за сега), и евентуално во иднина од formencode, simplejson.
 
 
 Стартање
