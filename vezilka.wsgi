@@ -1,10 +1,4 @@
+# make sure the /static urls is accessible via Apache
 
 import vezilka
-config = {
-    'couchdb.url': 'http://localhost:5984/vezilka',
-    'beaker.session.type': 'cookie',
-    'beaker.session.key': 'vezilka',
-    'beaker.session.validate_key': 'somesecret',
-}
-
-application = vezilka.app_factory(config)
+application = vezilka.make_app(db_url='http://localhost:5984/vezilka')
