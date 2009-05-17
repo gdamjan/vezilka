@@ -1,30 +1,64 @@
-import couchdb
+from couchdb.schema import Document, DateTimeField, TextField, DictField, Schema
+from couchdb.client import Database
 import markup
 
-server = couchdb.Server('http://localhost:5984/') # from config
-db = server['vezilka'] # from config
+from datetime import datetime
 
-def get_doc(id):
-    return db.get(id)
+class Page(Document):
+    slug = TextField()
+    Type = TextField(default='page')
+    content_type = TextField(default='inline-text/x-rst')
+    datetime = DictField(Schema.build(
+        created = DateTimeField(default=datetime.now),
+        modified = DateTimeField(default=datetime.now)
+    ))
+    content = TextField()
+ 
+    def store(self, db, **kwargs):
+        self.datetime['modified'] = datetime.now()
+        super(Page, self).store(db, **kwargs)
 
-def create_page(doc):
-    db.create(doc)
+    @property 
+    def meta(self):
+        if not hasattr(self, '_meta'):
+            self.get_parsed_content()
+        return self._meta
 
-def update_page(doc):
-    db[doc.id] = doc
-        
-def get_page(slug):
-    rows = db.view('_design/pages/_view/by_slug', key = slug).rows
-    if len(rows) > 0:
-        id = rows[0].id
-        return get_doc(id)
-    else:
-        return None
+    @property 
+    def html(self):
+        if not hasattr(self, '_body'):
+            self.get_parsed_content()
+        return self._body
 
-def get_all_pages():
-    return db.view('pages/all')
+    def get_parsed_content(self):
+        engine = markup.get_engine(self['content_type'])
+        self._body, self._meta = engine(self['content'])
+        return self._body, self._meta
 
-def get_parsed_content(doc):
-    engine = markup.get_engine(doc['content_type'])
-    content, meta = engine(doc['content'])
-    return content, meta
+
+
+class Database(Database):
+ 
+    def by_slug(self, slug):
+        x = self.first('_design/pages/_view/by_slug', key=slug)
+        if x is not None:
+            return Page.load(self, x.id)
+        else:
+            return None
+
+    def first(self, name, **options):
+        v = self.view(name, **options)
+        if len(v) > 0:
+            return v.rows[0]
+        else:
+            return None
+
+    @property
+    def all_pages(self):
+        return self.view('_design/pages/_view/all')
+
+    @property
+    def all_comments(self):
+        return self.view('_design/comments/_view/all')
+
+

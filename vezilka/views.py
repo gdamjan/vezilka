@@ -2,27 +2,31 @@
 from __future__ import absolute_import, division
 import urllib, time
 
-from .model import get_page, get_parsed_content, markup, create_page, update_page
+from .model import markup, Page
 from .lib import *
-from . import application
+
+#import the global application singleton
+from . import application as app
 
 
-@application.expose("/", redirect_to='First_post')
-@application.expose("/<path:pagename>")
-class Page(object):
+@app.expose("/", redirect_to='First_post')
+@app.expose("/<path:pagename>")
+class ShowPage(object):
 
     def GET(self, req, pagename=u'First_post'):
-        doc = get_page(pagename)
+        db = self.app.config['db']
+        doc = db.by_slug(pagename)
         if doc is None:
-            raise NotFound()
+            c = Context(pagename=pagename)
+            c.edit_url = req.url_for(EditPage, pagename=pagename)
+            return Templated404('404.html', c=c)
         ctype = doc['content_type']
         if ctype.startswith('inline-text/'):
-            c = Context()
-            c.url = req.url_for(Page, pagename=pagename)
-            c.edit_url = req.url_for(Edit, pagename=pagename)
+            c = Context(pagename=pagename)
+            c.url = req.url_for(ShowPage, pagename=pagename)
+            c.edit_url = req.url_for(EditPage, pagename=pagename)
             c.delete_url = req.url_for(Delete, pagename=pagename)
-            c.pagename = pagename
-            c.content, c.meta = get_parsed_content(doc)
+            c.content, c.meta = doc.get_parsed_content()
             c.content_type = ctype
             c.created = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(doc['creation_time']))
             c.tags = doc['tags']
@@ -32,42 +36,38 @@ class Page(object):
         else:
             return Response(doc['content'], content_type=ctype, direct_passthrough=True)
 
-@application.expose("/<path:pagename>|edit")
-class Edit(object):
+@app.expose("/<path:pagename>|edit")
+class EditPage(object):
 
     def GET(self, req, pagename):
         # FIXME: get config.default_markup?
         c = Context()
         c.content_type = u'inline-text/x-rst'
         c.pagename = pagename
-        doc = get_page(pagename)
+        db = self.app.config['db']
+        doc = db.by_slug(pagename)
         if doc is not None:
             c.content = doc['content']
             c.content_type = doc['content_type']
             c.tags = ', '.join(doc['tags'])
         c.supported_content_types = markup.get_engine_list()
-        c.url = req.url_for(Page, pagename=pagename)
-        c.post_url = req.url_for(Edit, pagename=pagename)
+        c.url = req.url_for(ShowPage, pagename=pagename)
+        c.post_url = req.url_for(EditPage, pagename=pagename)
         return TemplatedResponse('edit.html', c=c)
 
     def POST(self, req, pagename):
-        doc = get_page(pagename)
+        db = self.app.config['db']
+        doc = db.by_slug(pagename)
         if doc is None:
-            doc = {}
-            doc['Type'] = 'page'
-            doc['slug'] = pagename
-            doc['creation_time'] = time.time()
-            create_page(doc)
-        doc = get_page(pagename)
+            doc = Page(slug=pagename)
         doc['tags'] = [ x.strip() for x in req.form.get('tags', '').split(',') ]
         doc['content'] = req.form['content']
         doc['content_type'] = req.form['content_type']
-        update_page(doc)
-        message = 'Successfully saved'
-        url = req.url_for(Page, pagename=pagename)
+        doc.store(db)
+        url = req.url_for(ShowPage, pagename=pagename)
         return redirect(url)
 
-@application.expose("/<path:pagename>|delete")
+@app.expose("/<path:pagename>|delete")
 class Delete(object):
 
     def GET(self, req, pagename):
@@ -78,11 +78,11 @@ class Delete(object):
 
     def POST(self, req, pagename):
         # do the delete? ...
-        url = req.url_for(Page, pagename=pagename)
+        url = req.url_for(ShowPage, pagename=pagename)
         return redirect(url) 
 
 
-@application.expose("/<path:pagename>|login")
+@app.expose("/<path:pagename>|login")
 class LoginController(object):
 
     def GET(self, req, pagename, username=None, status=None):

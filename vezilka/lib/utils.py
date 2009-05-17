@@ -37,3 +37,9 @@ class TemplatedResponse(Response):
         response = self.stream.render('xhtml', doctype=DocType.XHTML_STRICT)
         Response.__init__(self, response)
 
+class Templated404(TemplatedResponse):
+    default_status = 404
+
+
+
+__all__ = ('Request', 'Response', 'TemplatedResponse', 'Templated404')
