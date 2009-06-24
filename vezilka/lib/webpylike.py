@@ -10,9 +10,10 @@
     :copyright: (c) 2009 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD.
 """
-from utils import Request
-from werkzeug.exceptions import HTTPException, MethodNotAllowed
+from werkzeug import BaseRequest, BaseResponse
+from werkzeug.exceptions import HTTPException, MethodNotAllowed, NotFound
 from werkzeug.routing import Map, Rule, RuleFactory
+
 
 def expose(rule, **kw):
     def decorate(cls):
@@ -64,4 +65,20 @@ class WebPyApp(object):
             if hasattr(cls, 'GET') and not hasattr(cls, 'HEAD'):
                 setattr(cls, 'HEAD', getattr(cls, 'GET'))
         return self.url_map
+
+
+class Request(BaseRequest):
+    """Encapsulates a request."""
+
+    def __init__(self, environ, url_map, **kwargs):
+        super(Request, self).__init__(environ, **kwargs)
+        self.adapter = url_map.bind_to_environ(environ)
+
+    def url_for(self, endpoint, _external=False, **values):
+        return self.adapter.build(endpoint, values, force_external=_external)
+
+
+class Response(BaseResponse):
+    """Encapsulates a response."""
+    default_mimetype = "text/html"
 
