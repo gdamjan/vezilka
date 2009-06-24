@@ -5,14 +5,10 @@ import urllib, time
 from .model import markup, Page
 from .lib import *
 
-#import the global application singleton
-from . import application as app
 
-
-@app.expose("/", redirect_to='First_post')
-@app.expose("/<path:pagename>")
+@expose("/", redirect_to='First_post')
+@expose("/<path:pagename>")
 class ShowPage(object):
-
     def GET(self, req, pagename=u'First_post'):
         db = self.app.config['db']
         doc = db.by_slug(pagename)
@@ -36,7 +32,8 @@ class ShowPage(object):
         else:
             return Response(doc['content'], content_type=ctype, direct_passthrough=True)
 
-@app.expose("/<path:pagename>|edit")
+
+@expose("/<path:pagename>|edit")
 class EditPage(object):
 
     def GET(self, req, pagename):
@@ -67,7 +64,7 @@ class EditPage(object):
         url = req.url_for(ShowPage, pagename=pagename)
         return redirect(url)
 
-@app.expose("/<path:pagename>|delete")
+@expose("/<path:pagename>|delete")
 class Delete(object):
 
     def GET(self, req, pagename):
@@ -82,7 +79,7 @@ class Delete(object):
         return redirect(url) 
 
 
-@app.expose("/<path:pagename>|login")
+@expose("/<path:pagename>|login")
 class LoginController(object):
 
     def GET(self, req, pagename, username=None, status=None):
