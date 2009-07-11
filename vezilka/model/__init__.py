@@ -40,7 +40,7 @@ class Page(Document):
 class Database(Database):
  
     def by_slug(self, slug):
-        x = self.first('_design/pages/_view/by_slug', key=slug)
+        x = self.first('pages/by_slug', key=slug)
         if x is not None:
             return Page.load(self, x.id)
         else:
@@ -55,10 +55,10 @@ class Database(Database):
 
     @property
     def all_pages(self):
-        return self.view('_design/pages/_view/all')
+        return self.view('pages/all')
 
     @property
     def all_comments(self):
-        return self.view('_design/comments/_view/all')
+        return self.view('comments/all')
 
 
