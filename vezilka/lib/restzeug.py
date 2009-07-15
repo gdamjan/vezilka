@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-    webpylike
+    restzeug
     ~~~~~~~~~
 
-    This module is based on Werkzeugs web.py like dispatch example, but
-    heavily modified for this application. It becomes generally usefull.
+    A RESTful mini WSGI framework based on Werkzeug. It's based on the 
+    webpylike dispatch example in Werkzeug, but has been heavily modified
+    for this application. So, now it becomes generally usefull.
 
+    To use this module, a knowledge of Werkzeug (http://werkzeug.pocoo.org/)
+    is needed.
+    
+    :copyright: (c) 2009 Damjan Georgievski
     :copyright: (c) 2009 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD.
 """
@@ -22,12 +27,12 @@ def expose(rule, **kw):
         return cls
     return decorate
 
-class WebPyApp(object):
+class RESTzeug(object):
     """
-    An interface to a web.py like application.  It works like the web.run
-    function in web.py
+    Main WSGI application object for RESTzeug. 
     """
-    BASIC_METHODS = ('POST', 'GET', 'HEAD', 'PUT', 'DELETE')
+    __slots__ = ('config', 'url_map')
+    HTTP_METHODS = ('HEAD', 'GET', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT')
 
     def __init__(self, config=None, **extra_conf):
         self.config = config or {}
@@ -37,24 +42,29 @@ class WebPyApp(object):
     def __call__(self, environ, start_response):
         request = Request(environ, self.url_map)
         try:
-            cls, values = request.adapter.match()
+            cls, values = request.adapter.match() # raises NotFound
             view = cls()
-            view.app = self
-            try:
-                handler = getattr(view, request.method)
-            except AttributeError, e:
-                valid_methods = [m for m in self.BASIC_METHODS if hasattr(view, m)]
+            if (request.method not in self.HTTP_METHODS) or \
+                                not hasattr(view, request.method):
+                valid_methods = [m for m in self.HTTP_METHODS if hasattr(view, m)]
                 raise MethodNotAllowed(valid_methods=valid_methods)
+            view.app = self
+            handler = getattr(view, request.method)
             response = handler(request, **values)
-        except HTTPException, e:
+        except HTTPException as e:
             response = e
         return response(environ, start_response)
 
-    def publish(self, module):
-        '''Publish exposed classes in module'''
-        for item in  dir(module):
-            cls = getattr(module, item)
+    def publish(self, *modules):
+        '''Publish exposed classes in the modules provided as arguments'''
+        for module in modules:
+            self.publish_module(module)
+
+    def publish_module(self, module):
+        for cls_name in  dir(module):
+            cls = getattr(module, cls_name)
             if not hasattr(cls, '_exposed'):
+                # not an exposed class, skip
                 continue
             for rule, kw in cls._exposed:
                 if not isinstance(rule, RuleFactory):
@@ -64,7 +74,6 @@ class WebPyApp(object):
             # monkey patch the class to support HEAD if needed
             if hasattr(cls, 'GET') and not hasattr(cls, 'HEAD'):
                 setattr(cls, 'HEAD', getattr(cls, 'GET'))
-        return self.url_map
 
 
 class Request(BaseRequest):
@@ -76,7 +85,6 @@ class Request(BaseRequest):
 
     def url_for(self, endpoint, _external=False, **values):
         return self.adapter.build(endpoint, values, force_external=_external)
-
 
 class Response(BaseResponse):
     """Encapsulates a response."""

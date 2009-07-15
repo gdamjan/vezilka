@@ -3,7 +3,7 @@ from __future__ import absolute_import, division
 # Bring them all in a single namespace
 from werkzeug import redirect
 
-from .restzeug import WebPyApp, expose, Request, Response
+from .restzeug import RESTzeug, expose, Request, Response
 from .utils import *
 
 class Context(object):
