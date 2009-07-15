@@ -4,8 +4,7 @@
     ~~~~~~~~~
 
     This module is based on Werkzeugs web.py like dispatch example, but
-    heavily modified for this application. Unfortunetally it's not 
-    generally usefull.
+    heavily modified for this application. It becomes generally usefull.
 
     :copyright: (c) 2009 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD.
@@ -52,6 +51,7 @@ class WebPyApp(object):
         return response(environ, start_response)
 
     def publish(self, module):
+        '''Publish exposed classes in module'''
         for item in  dir(module):
             cls = getattr(module, item)
             if not hasattr(cls, '_exposed'):

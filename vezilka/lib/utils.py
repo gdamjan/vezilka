@@ -2,7 +2,7 @@ from genshi.output import DocType
 from genshi.template import TemplateLoader
 from genshi import HTML
 
-from webpylike import Response
+from restzeug import Response
 
 from os import path
 TEMPLATES_DIR = path.join(path.dirname(__file__), '..', 'templates')
