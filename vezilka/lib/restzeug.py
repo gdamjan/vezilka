@@ -27,20 +27,37 @@ def expose(rule, **kw):
         return cls
     return decorate
 
+
+class Request(BaseRequest):
+    """Encapsulates a request."""
+
+    def __init__(self, environ, url_map, **kwargs):
+        super(Request, self).__init__(environ, **kwargs)
+        self.adapter = url_map.bind_to_environ(environ)
+
+    def url_for(self, endpoint, _external=False, **values):
+        return self.adapter.build(endpoint, values, force_external=_external)
+
+
+class Response(BaseResponse):
+    """Encapsulates a response."""
+    default_mimetype = "text/html"
+
+
 class RESTzeug(object):
     """
     Main WSGI application object for RESTzeug. 
     """
-    __slots__ = ('config', 'url_map')
+    __slots__ = ('config', 'url_map', 'REQUEST')
     HTTP_METHODS = ('HEAD', 'GET', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT')
 
-    def __init__(self, config=None, **extra_conf):
+    def __init__(self, request_cls=None, config=None):
         self.config = config or {}
-        self.config.update(extra_conf)
+        self.REQUEST = request_cls or Request
         self.url_map = Map(redirect_defaults=False)
 
     def __call__(self, environ, start_response):
-        request = Request(environ, self.url_map)
+        request = self.REQUEST(environ, self.url_map)
         try:
             cls, values = request.adapter.match() # raises NotFound
             view = cls()
@@ -51,7 +68,7 @@ class RESTzeug(object):
             view.app = self
             handler = getattr(view, request.method)
             response = handler(request, **values)
-        except HTTPException as e:
+        except (HTTPException, BaseResponse) as e:
             response = e
         return response(environ, start_response)
 
@@ -76,17 +93,4 @@ class RESTzeug(object):
                 setattr(cls, 'HEAD', getattr(cls, 'GET'))
 
 
-class Request(BaseRequest):
-    """Encapsulates a request."""
-
-    def __init__(self, environ, url_map, **kwargs):
-        super(Request, self).__init__(environ, **kwargs)
-        self.adapter = url_map.bind_to_environ(environ)
-
-    def url_for(self, endpoint, _external=False, **values):
-        return self.adapter.build(endpoint, values, force_external=_external)
-
-class Response(BaseResponse):
-    """Encapsulates a response."""
-    default_mimetype = "text/html"
 
