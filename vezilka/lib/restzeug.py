@@ -48,30 +48,30 @@ class RESTzeug(object):
     """
     Main WSGI application object for RESTzeug. 
     """
-    __slots__ = ('config', 'url_map', 'REQUEST')
+    __slots__ = ('config', 'url_map', 'DEFAULT_REQUEST')
     HTTP_METHODS = ('HEAD', 'GET', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT')
 
     def __init__(self, request_cls=None, config=None):
-        self.config = config or {}
-        self.REQUEST = request_cls or Request
+        self.DEFAULT_REQUEST = Request if request_cls is None else request_cls
+        self.config = {} if config is None else config
         self.url_map = Map(redirect_defaults=False)
 
     def __call__(self, environ, start_response):
         adapter = self.url_map.bind_to_environ(environ)
         try:
-            cls, values = adapter.match() # raises NotFound
-            view = cls()
-            request_cls = getattr(view, 'REQUEST', self.REQUEST)
-            request = request_cls(environ, adapter)
-            if (request.method not in self.HTTP_METHODS) or \
-                                not hasattr(view, request.method):
+            view_cls, values = adapter.match() # raises NotFound
+            view = view_cls()
+            request_cls = getattr(view, 'REQUEST', self.DEFAULT_REQUEST)
+            req = request_cls(environ, adapter)
+            if (req.method not in self.HTTP_METHODS) or \
+                                not hasattr(view, req.method):
                 valid_methods = [m for m in self.HTTP_METHODS if hasattr(view, m)]
                 raise MethodNotAllowed(valid_methods=valid_methods)
             view.app = self
-            handler = getattr(view, request.method)
-            response = handler(request, **values)
-        except (HTTPException, BaseResponse) as e:
-            response = e
+            handler = getattr(view, req.method)
+            response = handler(req, **values)
+        except (HTTPException, BaseResponse) as exc:
+            response = exc
         return response(environ, start_response)
 
     def publish(self, *modules):
