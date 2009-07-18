@@ -4,7 +4,7 @@ setup(
      version = "0.2",
      author='Damjan Georgievski',
      author_email='gdamjan@gmail.com',
-     url='http://damjan.softver.org.mk:8080/git/Vezilka.git',
+     url='http://damjan.softver.org.mk/git/Vezilka',
      packages = find_packages(),
      install_requires=['Werkzeug', 'Genshi', 'CouchDB'],
      description = '', long_description = '',
