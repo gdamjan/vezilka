@@ -61,7 +61,8 @@ class RESTzeug(object):
         try:
             cls, values = adapter.match() # raises NotFound
             view = cls()
-            request = self.REQUEST(environ, adapter)
+            request_cls = getattr(view, 'REQUEST', self.REQUEST)
+            request = request_cls(environ, adapter)
             if (request.method not in self.HTTP_METHODS) or \
                                 not hasattr(view, request.method):
                 valid_methods = [m for m in self.HTTP_METHODS if hasattr(view, m)]
