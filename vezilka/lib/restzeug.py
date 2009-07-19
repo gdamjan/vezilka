@@ -14,7 +14,7 @@
     :copyright: (c) 2009 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD.
 """
-from werkzeug import BaseRequest, BaseResponse
+from werkzeug import BaseRequest, BaseResponse, redirect, abort
 from werkzeug.exceptions import HTTPException, MethodNotAllowed, NotFound
 from werkzeug.routing import Map, Rule, RuleFactory
 
@@ -36,7 +36,22 @@ class Request(BaseRequest):
         self.adapter = adapter
 
     def url_for(self, endpoint, _external=False, **values):
-        return self.adapter.build(endpoint, values, force_external=_external)
+        # if endpoint is not a string, the it must be in the url_map
+        if not isinstance(endpoint, basestring):
+            return self.adapter.build(endpoint, values, force_external=_external)
+        # if endpoint is an absolute url (string)
+        if endpoint.startswith('/'):
+            if _external:
+                return self.host_url + endpoint[1:]
+            return endpoint
+        # or else it's app-relative url:
+        if _external:
+            return self.url_root + endpoint
+        return self.script_root + '/' + endpoint
+
+    def redirect_to(self, endpoint, _code=301, **values):
+        location = self.url_for(endpoint, _external=True, **values)
+        abort(redirect(location, code=_code))
 
 
 class Response(BaseResponse):
@@ -70,7 +85,7 @@ class RESTzeug(object):
             view.app = self
             handler = getattr(view, req.method)
             response = handler(req, **values)
-        except (HTTPException, BaseResponse) as exc:
+        except HTTPException as exc:
             response = exc
         return response(environ, start_response)
 
