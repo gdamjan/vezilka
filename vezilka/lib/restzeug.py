@@ -51,7 +51,7 @@ class Request(BaseRequest):
 
     def redirect_to(self, endpoint, _code=301, **values):
         location = self.url_for(endpoint, _external=True, **values)
-        abort(redirect(location, code=_code))
+        return redirect(location, code=_code)
 
 
 class Response(BaseResponse):
