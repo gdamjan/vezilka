@@ -21,9 +21,9 @@ from werkzeug.routing import Map, Rule, RuleFactory
 
 def expose(rule, **kw):
     def decorate(cls):
-        if not hasattr(cls, '_exposed'):
-            cls._exposed = []
-        cls._exposed.append((rule, kw))
+        rules = getattr(cls, '_exposed', [])
+        rules.append((rule, kw))
+        setattr(cls, '_exposed', rules)
         return cls
     return decorate
 
@@ -97,10 +97,11 @@ class RESTzeug(object):
     def publish_module(self, module):
         for cls_name in  dir(module):
             cls = getattr(module, cls_name)
-            if not hasattr(cls, '_exposed'):
-                # not an exposed class, skip
+            rules = getattr(cls, '_exposed', None)
+            # if not an exposed class, just skip it
+            if rules is None:
                 continue
-            for rule, kw in cls._exposed:
+            for rule, kw in rules:
                 if not isinstance(rule, RuleFactory):
                     rule = Rule(rule, **kw)
                 rule.endpoint = cls
