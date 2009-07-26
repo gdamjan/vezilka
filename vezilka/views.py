@@ -3,19 +3,22 @@ from __future__ import absolute_import, division
 import urllib, time
 
 from .model import markup, Page
-from .lib import *
+from .lib import expose, Request, Context, Response
 
 
 @expose("/", redirect_to='First_post')
 @expose("/<path:pagename>")
 class ShowPage(object):
+    REQUEST = Request
     def GET(self, req, pagename=u'First_post'):
-        db = self.app.config['db']
+        db = self.app.config['CouchDB']
         doc = db.by_slug(pagename)
         if doc is None:
             c = Context(pagename=pagename)
             c.edit_url = req.url_for(EditPage, pagename=pagename)
-            return Templated404('404.html', c=c)
+            resp = req.render('404.html', c=c)
+            resp.status_code = 404
+            return resp
         ctype = doc['content_type']
         if ctype.startswith('inline-text/'):
             c = Context(pagename=pagename)
@@ -26,7 +29,7 @@ class ShowPage(object):
             c.content_type = ctype
             c.created = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(doc['creation_time']))
             c.tags = doc['tags']
-            return TemplatedResponse('show.html', c=c)
+            return req.render('show.html', c=c)
         elif ctype.startswith('text/'):
             return Response(doc['content'], mimetype=ctype)
         else:
@@ -35,13 +38,14 @@ class ShowPage(object):
 
 @expose("/<path:pagename>|edit")
 class EditPage(object):
+    REQUEST = Request
 
     def GET(self, req, pagename):
         # FIXME: get config.default_markup?
         c = Context()
         c.content_type = u'inline-text/x-rst'
         c.pagename = pagename
-        db = self.app.config['db']
+        db = self.app.config['CouchDB']
         doc = db.by_slug(pagename)
         if doc is not None:
             c.content = doc['content']
@@ -50,10 +54,10 @@ class EditPage(object):
         c.supported_content_types = markup.get_engine_list()
         c.url = req.url_for(ShowPage, pagename=pagename)
         c.post_url = req.url_for(EditPage, pagename=pagename)
-        return TemplatedResponse('edit.html', c=c)
+        return req.render('edit.html', c=c)
 
     def POST(self, req, pagename):
-        db = self.app.config['db']
+        db = self.app.config['CouchDB']
         doc = db.by_slug(pagename)
         if doc is None:
             doc = Page(slug=pagename)
@@ -61,26 +65,26 @@ class EditPage(object):
         doc['content'] = req.form['content']
         doc['content_type'] = req.form['content_type']
         doc.store(db)
-        url = req.url_for(ShowPage, pagename=pagename)
-        return redirect(url)
+        return req.redirect_to(ShowPage, pagename=pagename)
 
 @expose("/<path:pagename>|delete")
 class Delete(object):
+    REQUEST = Request
 
     def GET(self, req, pagename):
         c = Context()
         c.pagename = pagename
         c.url = req.url_for(Delete, pagename=pagename)
-        return TemplatedResponse('delete.html', c=c)
+        return req.render('delete.html', c=c)
 
     def POST(self, req, pagename):
-        # do the delete? ...
-        url = req.url_for(ShowPage, pagename=pagename)
-        return redirect(url) 
+        # XXX: check and do the delete
+        return req.redirect_to(ShowPage, pagename=pagename)
 
 
 @expose("/<path:pagename>|login")
 class LoginController(object):
+    REQUEST = Request
 
     def GET(self, req, pagename, username=None, status=None):
         c = Context()

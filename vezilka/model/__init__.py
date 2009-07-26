@@ -1,5 +1,5 @@
 from couchdb.schema import Document, DateTimeField, TextField, DictField, Schema
-from couchdb.client import Database
+from couchdb.client import Database as BaseDatabase
 import markup
 
 from datetime import datetime
@@ -37,7 +37,7 @@ class Page(Document):
 
 
 
-class Database(Database):
+class Database(BaseDatabase):
  
     def by_slug(self, slug):
         x = self.first('pages/by_slug', key=slug)
