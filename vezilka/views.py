@@ -6,7 +6,7 @@ from .model import markup, Page
 from .lib import expose, Request, Context, Response
 
 
-@expose("/", redirect_to='First_post')
+@expose("/", defaults={'pagename':'First_post'})
 @expose("/<path:pagename>")
 class ShowPage(object):
     REQUEST = Request

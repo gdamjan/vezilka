@@ -70,7 +70,8 @@ class RESTzeug(object):
     def __init__(self, request_cls=None, config=None):
         self.DEFAULT_REQUEST = Request if request_cls is None else request_cls
         self.config = {} if config is None else config
-        self.url_map = Map(redirect_defaults=False)
+        redirect_defaults = config.get('redirect_defaults', True)
+        self.url_map = Map(redirect_defaults=redirect_defaults)
 
     def __call__(self, environ, start_response):
         adapter = self.url_map.bind_to_environ(environ)
