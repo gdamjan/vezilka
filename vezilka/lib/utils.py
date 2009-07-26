@@ -10,7 +10,7 @@ class Request(BaseRequest):
     supply all the API needed by the views (controllers)'''
 
     def render(self, template_name, **data):
-        loader = self.app.config['GenshiLoader']
+        loader = self.global_config['GenshiLoader']
         template = loader.load(template_name)
         stream = template.generate(req=self, **data)
         response = stream.render('html', doctype=DocType.HTML_TRANSITIONAL)
