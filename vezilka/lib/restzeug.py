@@ -31,10 +31,10 @@ def expose(rule, **kw):
 class Request(BaseRequest):
     """Encapsulates a request."""
 
-    def __init__(self, environ, adapter, app, **kwargs):
+    def __init__(self, environ, adapter, config, **kwargs):
         super(Request, self).__init__(environ, **kwargs)
         self.adapter = adapter
-        self.app = app
+        self.global_config = config
 
     def url_for(self, endpoint, _external=False, **values):
         # if endpoint is not a string, the it must be in the url_map
@@ -78,7 +78,7 @@ class RESTzeug(object):
             view_cls, values = adapter.match() # raises NotFound
             view = view_cls()
             request_cls = getattr(view, 'REQUEST', self.DEFAULT_REQUEST)
-            req = request_cls(environ, adapter, self)
+            req = request_cls(environ, adapter, self.config)
             if (req.method not in self.HTTP_METHODS) or \
                                 not hasattr(view, req.method):
                 valid_methods = [m for m in self.HTTP_METHODS if hasattr(view, m)]

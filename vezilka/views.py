@@ -10,8 +10,9 @@ from .lib import expose, Request, Context, Response
 @expose("/<path:pagename>")
 class ShowPage(object):
     REQUEST = Request
+
     def GET(self, req, pagename=u'First_post'):
-        db = self.app.config['CouchDB']
+        db = req.global_config['CouchDB']
         doc = db.by_slug(pagename)
         if doc is None:
             c = Context(pagename=pagename)
@@ -45,7 +46,7 @@ class EditPage(object):
         c = Context()
         c.content_type = u'inline-text/x-rst'
         c.pagename = pagename
-        db = self.app.config['CouchDB']
+        db = req.global_config['CouchDB']
         doc = db.by_slug(pagename)
         if doc is not None:
             c.content = doc['content']
@@ -57,7 +58,7 @@ class EditPage(object):
         return req.render('edit.html', c=c)
 
     def POST(self, req, pagename):
-        db = self.app.config['CouchDB']
+        db = req.global_config['CouchDB']
         doc = db.by_slug(pagename)
         if doc is None:
             doc = Page(slug=pagename)
