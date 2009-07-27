@@ -14,7 +14,8 @@
     :copyright: (c) 2009 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD.
 """
-from werkzeug import BaseRequest, BaseResponse, redirect, abort
+from werkzeug import BaseRequest, BaseResponse, redirect, abort, \
+        ImmutableDict
 from werkzeug.exceptions import HTTPException, MethodNotAllowed, NotFound
 from werkzeug.routing import Map, Rule, RuleFactory
 
@@ -67,9 +68,9 @@ class RESTzeug(object):
     __slots__ = ('config', 'url_map', 'DEFAULT_REQUEST')
     HTTP_METHODS = ('HEAD', 'GET', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT')
 
-    def __init__(self, request_cls=None, config=None):
+    def __init__(self, request_cls=None, config={}):
         self.DEFAULT_REQUEST = Request if request_cls is None else request_cls
-        self.config = {} if config is None else config
+        self.config = ImmutableDict(config)
         redirect_defaults = config.get('redirect_defaults', True)
         self.url_map = Map(redirect_defaults=redirect_defaults)
 
