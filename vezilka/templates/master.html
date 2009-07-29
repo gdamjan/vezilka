@@ -7,7 +7,9 @@
     <title py:with="title = list(select('title/text()'))">
       Везилка<py:if test="title">: ${title}</py:if>
     </title>
-    <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" /> 
+    <link rel="stylesheet" href="${req.url_for('/static/style.css')}" type="text/css" media="screen" /> 
+    <script type="text/javascript"
+        src="${req.url_for('/static/jquery.js')}"></script>
     ${select('*[local-name()!="title"]')}
 </head>
 
