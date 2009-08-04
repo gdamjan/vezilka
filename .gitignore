@@ -1,1 +1,3 @@
 *.pyc
+*.dump
+Vezilka.egg-info
