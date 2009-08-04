@@ -8,7 +8,7 @@ from .lib import RESTzeug
 from .model import Database
 from . import views
 
-def make_app(config=None, **kwargs):
+def make_app(config=None, full_stack=True, static_files=True, **kwargs):
     config = config or {}
     config.update(kwargs)
     config['CouchDB'] = Database(config['db_url'])
@@ -17,12 +17,12 @@ def make_app(config=None, **kwargs):
  
     application = RESTzeug(config=config)
     application.publish(views)
- 
-    if 'beaker.session.type' in config:
+
+    if full_stack:
         application = SessionMiddleware(application, config)
 
-    if 'static_dir' in config:
+    if static_files:
         application = SharedDataMiddleware(application, 
-            {'/static': config.get('static_dir') } )
+            {'/static': config['static_dir'] } )
 
     return application

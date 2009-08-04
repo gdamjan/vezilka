@@ -21,8 +21,11 @@ def make_app():
     return vezilka.make_app(config)
 
 def make_shell():
+    import vezilka
     from vezilka.model import Page
-    application = make_app()
+    # make an application instance without the WSGI wrappers
+    application = vezilka.make_app(config, full_stack=False, static_files=False)
+    url_map = application.url_map
     database = config.get('CouchDB')
 
     return locals()
