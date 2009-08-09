@@ -19,6 +19,7 @@ from werkzeug import BaseRequest, BaseResponse, redirect, abort, \
 from werkzeug.exceptions import HTTPException, MethodNotAllowed, NotFound
 from werkzeug.routing import Map, Rule, RuleFactory
 
+import inspect
 
 def expose(rule, **kw):
     def decorate(cls):
@@ -75,9 +76,12 @@ class RESTzeug(object):
         self.url_map = Map(redirect_defaults=redirect_defaults)
 
     def __call__(self, environ, start_response):
+        return self.wsgi_dispatch(environ, start_response)
+
+    def wsgi_dispatch(self, environ, start_response):
         adapter = self.url_map.bind_to_environ(environ)
         try:
-            view_cls, values = adapter.match() # raises NotFound
+            view_cls, values = adapter.match() # can raise NotFound
             view = view_cls()
             request_cls = getattr(view, 'REQUEST', self.DEFAULT_REQUEST)
             req = request_cls(environ, adapter, self.config)
@@ -88,9 +92,9 @@ class RESTzeug(object):
             view.app = self
             handler = getattr(view, req.method)
             response = handler(req, **values)
-        except HTTPException as exc:
-            response = exc
-        return response(environ, start_response)
+            return response(environ, start_response)
+        except HTTPException, err:
+            return err(environ, start_response)
 
     def publish(self, *modules):
         '''Publish exposed classes in the modules provided as arguments'''
@@ -98,8 +102,10 @@ class RESTzeug(object):
             self.publish_module(module)
 
     def publish_module(self, module):
-        for cls_name in  dir(module):
-            cls = getattr(module, cls_name)
+        for name, cls in inspect.getmembers(module, inspect.isclass):
+            # class defined somewhere else, skip it
+            if inspect.getmodule(cls) is not module:
+                continue
             rules = getattr(cls, '_exposed', None)
             # if not an exposed class, just skip it
             if rules is None:
