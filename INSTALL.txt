@@ -1,0 +1,29 @@
+Development install
+===================
+
+Download (git clone it) and create the meta-info files:
+
+ git clone git://damjan.softver.org.mk/Vezilka
+ cd Vezilka
+ python setup.py egg_info
+
+
+Install dependencies in a virtual environment:
+
+ export PYTHONUSERBASE=$PWD/env (1)(2)
+ pip.py install -r Vezilka.egg-info/requires.txt --install-option=--user
+
+
+Run the development server
+
+ ./manage.py runserver
+
+
+(1) this is a Python >= 2.6 feature, but Vezilka requires it anyway
+(2) make sure you set this env. variable always when using Vezilka
+
+
+Production install
+==================
+
+FIXME
