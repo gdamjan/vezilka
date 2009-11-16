@@ -30,6 +30,11 @@ def make_shell():
 
     return locals()
 
+def action_initdb():
+    """Initialize the CouchDB view functions"""
+    print "I have no idea how to do this now, see vezilka/model/views.json"
+
+
 action_runserver = script.make_runserver(make_app,
         use_reloader=True, use_debugger=True)
 action_shell = script.make_shell(make_shell)

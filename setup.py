@@ -6,7 +6,7 @@ setup(
      author_email='gdamjan@gmail.com',
      url='http://damjan.softver.org.mk/git/Vezilka',
      packages = find_packages(),
-     install_requires=['Werkzeug', 'Genshi', 'CouchDB', 'Beaker'],
+     install_requires=['Werkzeug', 'Genshi', 'CouchDB', 'Beaker', 'docutils'],
      description = '', long_description = '',
      package_data = {},
      entry_points = {"paste.app_factory": "main=vezilka:make_app"},

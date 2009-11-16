@@ -10,17 +10,24 @@ Download (git clone it) and create the meta-info files:
 
 Install dependencies in a virtual environment:
 
- export PYTHONUSERBASE=$PWD/env (1)(2)
- pip.py install -r Vezilka.egg-info/requires.txt --install-option=--user
+ export PYTHONUSERBASE=$PWD/env  # see (1)(2)
+ pip.py install -r Vezilka.egg-info/requires.txt --install-option=--user # (3)
 
 
-Run the development server
-
+Start the CouchDB database, initialize a database, and run the development
+server:
+ ./manage.py initdb
  ./manage.py runserver
+
+You can edit the ./manage.py to change the settings.
 
 
 (1) this is a Python >= 2.6 feature, but Vezilka requires it anyway
 (2) make sure you set this env. variable always when using Vezilka
+(3) get pip.py from http://pypi.python.org/pypi/pip/ or just:
+  wget http://bitbucket.org/ianb/pip/raw/tip/pip.py
+  chmod +x pip.py
+
 
 
 Production install
