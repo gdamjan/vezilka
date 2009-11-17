@@ -6,7 +6,7 @@ from datetime import datetime
 
 class Page(Document):
     slug = TextField()
-    Type = TextField(default='page')
+    doc_type = TextField(default='page')
     content_type = TextField(default='inline-text/x-rst')
     datetime = DictField(Schema.build(
         created = DateTimeField(default=datetime.now),
@@ -15,7 +15,7 @@ class Page(Document):
     content = TextField()
  
     def store(self, db, **kwargs):
-        self.datetime['modified'] = datetime.now()
+        self.datetime['modified'] = DateTimeField()._to_json(datetime.now())
         super(Page, self).store(db, **kwargs)
 
     @property 

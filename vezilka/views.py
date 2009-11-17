@@ -28,7 +28,7 @@ class ShowPage(object):
             c.delete_url = req.url_for(Delete, pagename=pagename)
             c.content, c.meta = doc.get_parsed_content()
             c.content_type = ctype
-            c.created = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(doc['creation_time']))
+            c.created = doc.datetime['created']
             c.tags = doc['tags']
             return req.render('show.html', c=c)
         elif ctype.startswith('text/'):

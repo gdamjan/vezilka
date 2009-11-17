@@ -29,7 +29,7 @@
   {
     "all": { 
        "map": "function(doc) { for(var i=0; i<doc.tags.length; i++) { emit(doc.tags[i], null) } }"
-    }
+    },
     "weight": {
        "map": "function(doc) { for(var i=0; i<doc.tags.length; i++) { emit(doc.tags[i], null) } }",
        "reduce": "function(keys, values, combine) { if (combine) { return sum(values); } else { return values.length; } }"
