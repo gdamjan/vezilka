@@ -8,14 +8,12 @@ class Page(Document):
     slug = TextField()
     doc_type = TextField(default='page')
     content_type = TextField(default='inline-text/x-rst')
-    datetime = DictField(Schema.build(
-        created = DateTimeField(default=datetime.now),
-        modified = DateTimeField(default=datetime.now)
-    ))
+    created = DateTimeField(default=datetime.now)
+    modified = DateTimeField(default=datetime.now)
     content = TextField()
  
     def store(self, db, **kwargs):
-        self.datetime['modified'] = DateTimeField()._to_json(datetime.now())
+        self.modified = datetime.now()
         super(Page, self).store(db, **kwargs)
 
     @property 
