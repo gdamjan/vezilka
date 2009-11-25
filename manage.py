@@ -32,8 +32,13 @@ def make_shell():
 
 def action_initdb():
     """Initialize the CouchDB view functions"""
-    print "I have no idea how to do this now, see vezilka/model/views.json"
-
+    from vezilka.model import manage
+    ans = raw_input("This might destroy your database (%s). Continue (y/n)? " % config['db_url'])
+    if ans not in ['Y', 'y']:
+        print "Aborted"
+        return 1
+    manage.initdb(config['db_url'])
+    print "Success"
 
 action_runserver = script.make_runserver(make_app,
         use_reloader=True, use_debugger=True)

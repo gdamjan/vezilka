@@ -2,30 +2,28 @@
 Везилка
 =======
 
-Ова е имплементација на Везилка, wiki/blog системот, без Pylons.
-WSGI апликацијата зависи само од Python-2.6, Werkzeug, CouchDB, Beaker и Genshi
-(сега за сега), и евентуално во иднина од formencode, simplejson.
+Ова е имплементација на Везилка wiki/blog. Првата верзија на Везилка беше класична Pylons + SQLAlchemy апликација. Оваа верзија веќе не користи готов web framework туку custom-изиран врз база на Werkzeug_. Исто така не користи класична SQL база туку CouchDB.
 
+WSGI апликацијата зависи од: Python-2.6, Werkzeug, Genshi, CouchDB
+(сега за сега), и евентуално во иднина од formencode, simplejson, Creoleparser....
 
-Стартање
-========
+spec:
 
-Може да се тестира со стартање на вклучената скрипта „dev.py“, или ако е инсталиран PythonPaste со командата „paster serve --reload dev.ini“. Доколку користите mod_wsgi може да ја употребите скриптата vezilka.wsgi.
+- GET http://host/app/page_name - read page
+- GET http://host/app/page_name|edit - show edit form
+- POST http://host/app/page_name - update page, redirect back
 
+- GET http://host/app/page_name|delete - show delete confirm form
+- POST http://host/app/page_name|delete - delete page, redirect (to undo page?)
 
+- GET http://host/app/nonexistent_page -> Redirect to nonexistent_page|edit
 
-Спецификација
-=============
+Special pages:
 
-| или ; е сепаратор за акција
-. е сепаратор за формат, на пример .pdf генерира PDF, 
-а би требало да се имплементира и: .atom, .rss, .txt и .json
+- rss/atom: GET http://host/app/page_name|atom ?
+- json interface: GET/POST http://host/app/.json/xxx ?
 
-GET http://host/app/page_name - покажи страна
-GET http://host/app/page_name|edit - ја покажува формата за едитирање
-POST http://host/app/page_name - ја снима промената, прави redirect на „покажи страна“
+View the TODO_
 
-GET http://host/app/page_name|delete - покажува форма за потврда на бришење
-POST http://host/app/page_name|delete - ја брише страната, покажува опција за undo
-
-GET http://host/app/nonexistent_page - ако страната не постои редиректира на nonexistent_page|edit
+.. _TODO: TODO
+.. _Werkzeug: http://werkzeug.pocoo.org/

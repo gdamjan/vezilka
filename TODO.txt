@@ -1,13 +1,18 @@
 ====
 TODO
 ====
+- API за страните (widget-и, `extend docutils`_)
+- атачменти
+- atom/rss интерфејс
+- admin интерфејс (прокси до couchdb? ова би било многу лесно и нема да треба јас да го правам)
+- json интерфејс; можда, зошто?
+- rename pagename
+- интерфејс до tag-овите
+- /YYYY/MM/DD/ url-а; да или не?
+- имплементирање на различни формати како излез, pdf, atom, txt, json итн.
 
-- вметнување функции во docutils парсерот, така да може 
-  да се користат (повикуваат) во rST документите
-  (види http://docutils.sourceforge.net/docs/howto/rst-directives.html)
-- имплементирање на различни формати како излез, pdf, atom, 
-  txt, json итн.
-- дозволи можност template-ите да се зимаат од друга локација, 
-  поставена во конфигурацијата. Така самиот пакет „vezilka“ ќе
-  може да се искористи од повеќе инстанци. (config опција template_dir)
-- attachment-и во couchdb
+
+back to First_post_
+
+.. _First_post: First_post
+.. _`extend docutils`: http://docutils.sourceforge.net/docs/howto/rst-directives.html
